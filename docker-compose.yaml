@@ -1,0 +1,34 @@
+version: '3'
+services:
+  activemq:
+    image: webcenter/activemq:latest
+    ports:
+      - "8161:8161" # Web console
+      - "61616:61616" # OpenWire
+      - "5672:5672" # AMQP
+      - "1883:1883" # MQTT
+    networks:
+      - pizzanetwork
+  
+  order-supplier-app:
+    build:
+      context: ./PizzaOrderSupplier
+    ports:
+      - "8081:8081"
+    depends_on:
+      - activemq
+    networks:
+      - pizzanetwork  
+  kitchen-app:
+    build:
+      context: ./PizzaKitchen
+    ports:
+      - "8080:8080"
+    depends_on:
+      - activemq
+    networks:
+      - pizzanetwork
+
+networks:
+  pizzanetwork:
+    driver: bridge 
